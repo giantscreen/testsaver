@@ -1,2 +1,2 @@
 # testsaver
-testing things for screensaver, none of these things will officially be in screensaver
+testing things for screensaver, none of these things are confirmed to officially be in screensaver
