@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Clever</title>
+<link rel="icon" type="image/png" href="/favicon.png" />
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:system-ui,Segoe UI,Roboto,Arial;
+  color:#fff;
+}
+#hint{
+  position:fixed;
+  bottom:12px;
+  left:12px;
+  color:#888;
+  font-size:12px;
+  z-index:3;
+}
+#linkIndicator{
+  position:fixed;
+  bottom:4px;
+  right:8px;
+  font-size:10px;
+  color:#444;
+  z-index:3;
+}
+</style>
+</head>
+<body>
+
+<div id="hint">stop this madness</div>
+<div id="linkIndicator"></div>
+
+<script>
+(function(){
+
+const SECRET_CODE = "cyrax";
+
+const REPLACEMENTS = [
+  {url:"https://www.clever.com",title:"Clever",favicon:"https://www.clever.com/favicon.ico"},
+  {url:"https://wwhs.echo-ntn.org",title:"Buzz",favicon:"https://wwhs.echo-ntn.org/favicon.ico"},
+  {url:"about:blank",title:"about:blank",favicon:"/favicon.png"}
+];
+
+const HUB_LINKS = [
+  { name:"1", url:"effects.html" },
+  { name:"2", url:"https://houstonschooldistrict.com/" },
+  { name:"3", url:"effects2.html" },
+  { name:"4", url:"amazingparticles.html" },
+  { name:"5", url:"galaxymovements.html" },
+  { name:"6", url:"moreamazingeffects.html" },
+  { name:"7", url:"https://slime-rancherweb.netlify.app/" },
+  { name:"A cooler place", url:"https://rightonaether.github.io/DesmosAPI-Graphing/" },
+];
+
+let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
+document.title = REPLACEMENTS[index].title;
+document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
+
+function openHub(){
+  const tab = window.open("about:blank","_blank");
+  if(!tab) return;
+
+  const hubHTML = `
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>${REPLACEMENTS[index].title}</title>
+<link rel="icon" href="${REPLACEMENTS[index].favicon}">
+<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#000;
+  color:#f5c400;
+  font-family:'Stalinist One',system-ui,Segoe UI,Roboto,Arial;
+  overflow:hidden;
+}
+
+#bg{position:fixed;inset:0;z-index:0}
+#scanlines{
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.04) 0px,
+    rgba(255,255,255,0.04) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  mix-blend-mode:overlay;
+  pointer-events:none;
+  z-index:2;
+}
+
+#loading{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#111,#000 70%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:18px;
+  z-index:5;
+  opacity:1;
+  transition:opacity 0.8s ease-out;
+}
+#loading.fade-out{
+  opacity:0;
+}
+.loader{
+  width:64px;
+  height:64px;
+  border:3px solid #f5c40033;
+  border-top:3px solid #f5c400;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#hub{
+  display:none;
+  height:100%;
+  flex-direction:row;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:24px;
+  position:relative;
+  z-index:3;
+  padding:24px;
+  overflow-y:auto;
+  opacity:0;
+  transition:opacity 0.8s ease-in;
+}
+#hub.fade-in{
+  opacity:1;
+}
+h1{
+  letter-spacing:4px;
+  text-shadow:0 0 14px #f5c40088;
+  margin:0 0 24px 0;
+}
+#grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  flex:1;
+}
+.icon-btn{
+  background:linear-gradient(145deg,#0a0a0a,#030303);
+  border:1px solid #f5c40066;
+  padding:24px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:.15s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:80px;
+  word-wrap:break-word;
+  font-size:16px;
+  line-height:1.2;
+}
+.icon-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 20px #f5c40088;
+}
+#patch-notes{
+  width:300px;
+  background:rgba(0,0,0,0.5);
+  border:1px solid #f5c40066;
+  padding:18px;
+  border-radius:4px;
+  max-height:80vh;
+  overflow-y:auto;
+}
+#patch-notes h2{
+  margin:0 0 16px 0;
+  letter-spacing:2px;
+  text-shadow:0 0 14px #f5c40088;
+  font-family:'Stalinist One';
+}
+#patch-notes-content{
+  font-family:'Roboto',sans-serif;
+  font-size:13px;
+  line-height:1.6;
+  color:#f5c400;
+}
+.icon{
+  width:36px;
+  height:36px;
+  margin:0 auto 10px;
+  background:linear-gradient(135deg,#f5c400,#ffea7a);
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+  display:none;
+}
+
+#panic{
+  position:fixed;
+  bottom:18px;
+  right:18px;
+  background:#300;
+  border:1px solid #f00;
+  color:#f88;
+  padding:10px 16px;
+  cursor:pointer;
+  z-index:4;
+}
+
+iframe{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  display:none;
+  z-index:9999;
+}
+#app-loading{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#111,#000 70%);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:18px;
+  z-index:9998;
+}
+#app-loading.show{
+  display:flex;
+}
+#app-loader{
+  width:64px;
+  height:64px;
+  border:3px solid #f5c40033;
+  border-top:3px solid #f5c400;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div id="scanlines"></div>
+
+<div id="loading">
+  <div class="loader"></div>
+  <div>SYSTEM INITIALIZING</div>
+</div>
+
+<div id="hub">
+  <div style="flex:1;">
+    <h1>CYRAX</h1>
+    <div id="grid">
+      ${HUB_LINKS.map(l=>`
+        <div class="icon-btn" data-url="${l.url}">
+          <span>${l.name}</span>
+        </div>
+      `).join("")}
+    </div>
+  </div>
+  <div id="patch-notes">
+    <h2>PATCH NOTES</h2>
+    <div id="patch-notes-content">
+      v1.0.0 - Initial Release<br><br>
+      Welcome to the system. All core features operational.
+    </div>
+  </div>
+</div>
+
+<button id="panic">PANIC</button>
+<div id="app-loading">
+  <div id="app-loader"></div>
+  <div>LOADING APPLICATION</div>
+</div>
+<iframe id="frame"></iframe>
+
+<script>
+const c=document.getElementById('bg'),ctx=c.getContext('2d');
+function resize(){c.width=innerWidth;c.height=innerHeight}
+resize();addEventListener('resize',resize);
+const lines=Array.from({length:80},()=>({
+  x:Math.random()*c.width,
+  y:Math.random()*c.height,
+  l:60+Math.random()*120,
+  s:0.3+Math.random()*0.6
+}));
+const dots=Array.from({length:40},()=>({
+  x:Math.random()*c.width,
+  y:Math.random()*c.height,
+  r:Math.random()*3,
+  s:0.1+Math.random()*0.3,
+  opacity:Math.random()*0.6+0.2
+}));
+let time=0;
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.fillRect(0,0,c.width,c.height);
+  time+=0.01;
+  
+  ctx.fillStyle='rgba(245,196,0,0.08)';
+  for(let i=0;i<c.height;i+=40){
+    ctx.globalAlpha=Math.max(0.02,0.05+0.04*Math.sin(time+i*0.01));
+    ctx.fillRect(0,i,c.width,20);
+  }
+  ctx.globalAlpha=1;
+  
+  ctx.strokeStyle='rgba(245,196,0,0.2)';
+  ctx.lineWidth=1;
+  for(const ln of lines){
+    ctx.globalAlpha=0.15+0.1*Math.sin(time+ln.x*0.001);
+    ctx.beginPath();
+    ctx.moveTo(ln.x,ln.y);
+    ctx.lineTo(ln.x+ln.l,ln.y);
+    ctx.stroke();
+    ln.x+=ln.s;
+    if(ln.x>c.width) ln.x=-ln.l;
+  }
+  ctx.globalAlpha=1;
+  
+  ctx.fillStyle='rgba(245,196,0,0.4)';
+  ctx.shadowColor='rgba(245,196,0,0.8)';
+  ctx.shadowBlur=15;
+  for(const dot of dots){
+    ctx.globalAlpha=dot.opacity+0.2*Math.sin(time*2+dot.x);
+    ctx.beginPath();
+    ctx.arc(dot.x,dot.y,dot.r,0,Math.PI*2);
+    ctx.fill();
+    dot.x+=dot.s;
+    if(dot.x>c.width) dot.x=-dot.r;
+  }
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  
+  ctx.strokeStyle='rgba(245,196,0,0.1)';
+  ctx.lineWidth=2;
+  const centerX=c.width/2;
+  const centerY=c.height/2;
+  for(let r=50;r<300;r+=60){
+    ctx.globalAlpha=0.08+0.04*Math.sin(time*0.5+r*0.01);
+    ctx.beginPath();
+    ctx.arc(centerX,centerY,r+Math.sin(time*0.3)*20,0,Math.PI*2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  
+  requestAnimationFrame(draw);
+}
+draw();
+
+setTimeout(()=>{
+  document.getElementById('loading').classList.add('fade-out');
+  document.getElementById('hub').style.display='flex';
+  setTimeout(()=>{
+    document.getElementById('hub').classList.add('fade-in');
+    document.getElementById('loading').remove();
+  },50);
+},1500);
+
+document.getElementById('grid').onclick=e=>{
+  const btn=e.target.closest('.icon-btn');
+  if(!btn) return;
+  document.getElementById('hub').remove();
+  document.getElementById('app-loading').classList.add('show');
+  document.getElementById('panic').style.display='none';
+  setTimeout(()=>{
+    const f=document.getElementById('frame');
+    f.src="https://giantscreen.github.io/screensaver/#target="+encodeURIComponent(btn.dataset.url);
+    f.style.display='block';
+    document.getElementById('app-loading').remove();
+  },2000);
+};
+
+function panic(){window.close()}
+document.getElementById('panic').onclick=panic;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')panic()});
+<\/script>
+
+</body>
+</html>
+`;
+
+  tab.document.open();
+  tab.document.write(hubHTML);
+  tab.document.close();
+
+  document.documentElement.style.visibility='hidden';
+  setTimeout(()=>location.replace(REPLACEMENTS[index].url),250);
+}
+
+let buffer="";
+window.addEventListener("keydown",e=>{
+  buffer+=e.key.toLowerCase();
+  if(buffer.endsWith(SECRET_CODE)){
+    buffer="";
+    openHub();
+  }
+  if(buffer.length>20) buffer=buffer.slice(-20);
+});
+
+})();
+</script>
+
+</body>
+</html>
