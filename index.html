@@ -59,6 +59,12 @@ const HUB_LINKS = [
   { name:"A cooler place", url:"https://rightonaether.github.io/DesmosAPI-Graphing/" },
 ];
 
+const G_LIST_LINKS = [
+  { name:"G-Link 1", url:"https://example.com/1" },
+  { name:"G-Link 2", url:"https://example.com/2" },
+  { name:"G-Link 3", url:"https://example.com/3" }
+];
+
 let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
 document.title = REPLACEMENTS[index].title;
 document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
@@ -110,12 +116,13 @@ html,body{
   justify-content:center;
   flex-direction:column;
   gap:18px;
-  z-index:5;
+  z-index:10;
   opacity:1;
-  transition:opacity 0.8s ease-out;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s;
 }
 #loading.fade-out{
   opacity:0;
+  visibility: hidden;
 }
 .loader{
   width:64px;
@@ -128,7 +135,7 @@ html,body{
 @keyframes spin{to{transform:rotate(360deg)}}
 
 #hub{
-  display:none;
+  display:flex; /* Changed from none to facilitate transition */
   height:100%;
   flex-direction:row;
   align-items:flex-start;
@@ -139,10 +146,12 @@ html,body{
   padding:24px;
   overflow-y:auto;
   opacity:0;
-  transition:opacity 0.8s ease-in;
+  transition:opacity 1s ease-in-out;
+  pointer-events: none;
 }
 #hub.fade-in{
   opacity:1;
+  pointer-events: auto;
 }
 h1{
   letter-spacing:4px;
@@ -174,6 +183,47 @@ h1{
   transform:scale(1.05);
   box-shadow:0 0 20px #f5c40088;
 }
+
+#g-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+#g-popup-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+#g-popup-content {
+  background: #000;
+  border: 2px solid #f5c400;
+  padding: 30px;
+  width: 85%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+#g-popup-overlay.active #g-popup-content {
+  transform: translateY(0);
+}
+#close-g-list {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #f5c400;
+  cursor: pointer;
+  font-size: 28px;
+}
+
 #patch-notes{
   width:300px;
   background:rgba(0,0,0,0.5);
@@ -194,14 +244,6 @@ h1{
   font-size:13px;
   line-height:1.6;
   color:#f5c400;
-}
-.icon{
-  width:36px;
-  height:36px;
-  margin:0 auto 10px;
-  background:linear-gradient(135deg,#f5c400,#ffea7a);
-  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
-  display:none;
 }
 
 #panic{
@@ -256,7 +298,7 @@ iframe{
 
 <div id="loading">
   <div class="loader"></div>
-  <div>hi</div>
+  <div>INITIALIZING...</div>
 </div>
 
 <div id="hub">
@@ -268,13 +310,32 @@ iframe{
           <span>${l.name}</span>
         </div>
       `).join("")}
+      <div class="icon-btn" id="g-list-trigger" style="border-color:#f5c400; color:#fff; background:linear-gradient(145deg, #1a1a00, #000);">
+        <span>G-LIST</span>
+      </div>
     </div>
   </div>
   <div id="patch-notes">
     <h2>PATCH NOTES</h2>
     <div id="patch-notes-content">
-      v1.0.0 - Initial Release<br><br>
-      Welcome to the system. All core features operational.
+      v1.1.0 - UI Update<br><br>
+      - Improved Hub transitions.<br>
+      - Added G-List popup module.<br>
+      - Enhanced animation consistency.
+    </div>
+  </div>
+</div>
+
+<div id="g-popup-overlay">
+  <div id="g-popup-content">
+    <div id="close-g-list">&times;</div>
+    <h1 style="text-align:center; font-size:24px;">G-LIST MODULE</h1>
+    <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
+      ${G_LIST_LINKS.map(l=>`
+        <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
+          <span>${l.name}</span>
+        </div>
+      `).join("")}
     </div>
   </div>
 </div>
@@ -359,27 +420,56 @@ function draw(){
 }
 draw();
 
+// Fixed Hub Transition
 setTimeout(()=>{
-  document.getElementById('loading').classList.add('fade-out');
-  document.getElementById('hub').style.display='flex';
-  setTimeout(()=>{
-    document.getElementById('hub').classList.add('fade-in');
-    document.getElementById('loading').remove();
-  },50);
+  const loading = document.getElementById('loading');
+  const hub = document.getElementById('hub');
+  
+  loading.classList.add('fade-out');
+  hub.classList.add('fade-in');
+  
+  // Cleanup loading element after transition
+  setTimeout(() => loading.remove(), 800);
 },1500);
 
-document.getElementById('grid').onclick=e=>{
-  const btn=e.target.closest('.icon-btn');
-  if(!btn) return;
+function loadUrl(url) {
   document.getElementById('hub').remove();
+  document.getElementById('g-popup-overlay').classList.remove('active');
   document.getElementById('app-loading').classList.add('show');
   document.getElementById('panic').style.display='none';
   setTimeout(()=>{
     const f=document.getElementById('frame');
-    f.src="https://giantscreen.github.io/screensaver/#target="+encodeURIComponent(btn.dataset.url);
+    f.src="https://giantscreen.github.io/screensaver/#target="+encodeURIComponent(url);
     f.style.display='block';
     document.getElementById('app-loading').remove();
   },2000);
+}
+
+document.getElementById('grid').onclick=e=>{
+  const btn=e.target.closest('.icon-btn');
+  if(!btn) return;
+  if(btn.id === 'g-list-trigger') {
+    document.getElementById('g-popup-overlay').classList.add('active');
+    return;
+  }
+  loadUrl(btn.dataset.url);
+};
+
+document.getElementById('g-grid').onclick=e=>{
+  const btn=e.target.closest('.g-link-item');
+  if(!btn) return;
+  loadUrl(btn.dataset.url);
+};
+
+document.getElementById('close-g-list').onclick=()=>{
+  document.getElementById('g-popup-overlay').classList.remove('active');
+};
+
+// Close popup on clicking overlay
+document.getElementById('g-popup-overlay').onclick=(e)=>{
+  if(e.target.id === 'g-popup-overlay') {
+    document.getElementById('g-popup-overlay').classList.remove('active');
+  }
 };
 
 function panic(){window.close()}
