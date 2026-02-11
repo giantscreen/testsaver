@@ -111,7 +111,7 @@ function openHub(){
 <head>
 <meta charset="utf-8">
 <title>${REPLACEMENTS[index].title}</title>
-<link rel="icon" href="${REPLACEMENTS[index].favicon}">
+<link id="hub-favicon" rel="icon" href="${REPLACEMENTS[index].favicon}">
 <link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 html,body{
@@ -522,7 +522,7 @@ document.getElementById('settings-content').onclick=e=>{
     const newIdx = parseInt(btn.dataset.idx);
     window.opener.postMessage({type:'setReplacement', index: newIdx}, "*");
     document.title = REPLACEMENTS_DATA[newIdx].title;
-    const favicon = document.querySelector("link[rel*='icon']");
+    const favicon = document.getElementById("hub-favicon");
     if(favicon) favicon.href = REPLACEMENTS_DATA[newIdx].favicon;
 };
 
