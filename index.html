@@ -94,6 +94,13 @@ let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
 document.title = REPLACEMENTS[index].title;
 document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
 
+function updateReplacement(newIdx) {
+  index = newIdx;
+  localStorage.setItem("linkChoice", index);
+  document.title = REPLACEMENTS[index].title;
+  document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
+}
+
 function openHub(){
   const tab = window.open("about:blank","_blank");
   if(!tab) return;
@@ -160,7 +167,7 @@ html,body{
 @keyframes spin{to{transform:rotate(360deg)}}
 
 #hub{
-  display:flex; /* Changed from none to facilitate transition */
+  display:flex; 
   height:100%;
   flex-direction:row;
   align-items:flex-start;
@@ -251,14 +258,17 @@ h1{
 
 #patch-notes{
   width:300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.side-panel{
   background:rgba(0,0,0,0.5);
   border:1px solid #f5c40066;
   padding:18px;
   border-radius:4px;
-  max-height:80vh;
-  overflow-y:auto;
 }
-#patch-notes h2{
+.side-panel h2{
   margin:0 0 16px 0;
   letter-spacing:2px;
   text-shadow:0 0 14px #f5c40088;
@@ -314,6 +324,17 @@ iframe{
   border-radius:50%;
   animation:spin 1s linear infinite;
 }
+.settings-btn {
+    background: #111;
+    border: 1px solid #f5c400;
+    color: #f5c400;
+    padding: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+.settings-btn:hover { background: #222; }
 </style>
 </head>
 <body>
@@ -341,10 +362,20 @@ iframe{
     </div>
   </div>
   <div id="patch-notes">
-    <h2>PATCH NOTES</h2>
-    <div id="patch-notes-content">
-      v1.2.0 - yeah<br><br>
-      - Added more stuff yep<br>
+    <div class="side-panel">
+        <h2>SETTINGS</h2>
+        <div id="settings-content">
+            ${REPLACEMENTS.map((r, i) => `
+                <button class="settings-btn" data-idx="${i}">${r.title}</button>
+            `).join("")}
+        </div>
+    </div>
+    <div class="side-panel">
+        <h2>PATCH NOTES</h2>
+        <div id="patch-notes-content">
+          v1.2.0 - yeah<br><br>
+          - Added more stuff yep<br>
+        </div>
     </div>
   </div>
 </div>
@@ -371,6 +402,7 @@ iframe{
 <iframe id="frame"></iframe>
 
 <script>
+const REPLACEMENTS_DATA = ${JSON.stringify(REPLACEMENTS)};
 const c=document.getElementById('bg'),ctx=c.getContext('2d');
 function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
@@ -443,15 +475,11 @@ function draw(){
 }
 draw();
 
-// Fixed Hub Transition
 setTimeout(()=>{
   const loading = document.getElementById('loading');
   const hub = document.getElementById('hub');
-  
   loading.classList.add('fade-out');
   hub.classList.add('fade-in');
-  
-  // Cleanup loading element after transition
   setTimeout(() => loading.remove(), 800);
 },1500);
 
@@ -488,7 +516,16 @@ document.getElementById('close-g-list').onclick=()=>{
   document.getElementById('g-popup-overlay').classList.remove('active');
 };
 
-// Close popup on clicking overlay
+document.getElementById('settings-content').onclick=e=>{
+    const btn=e.target.closest('.settings-btn');
+    if(!btn) return;
+    const newIdx = parseInt(btn.dataset.idx);
+    window.opener.postMessage({type:'setReplacement', index: newIdx}, "*");
+    document.title = REPLACEMENTS_DATA[newIdx].title;
+    const favicon = document.querySelector("link[rel*='icon']");
+    if(favicon) favicon.href = REPLACEMENTS_DATA[newIdx].favicon;
+};
+
 document.getElementById('g-popup-overlay').onclick=(e)=>{
   if(e.target.id === 'g-popup-overlay') {
     document.getElementById('g-popup-overlay').classList.remove('active');
@@ -514,12 +551,26 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')panic()});
 
 let buffer="";
 window.addEventListener("keydown",e=>{
+  // Switch Replacement with L
+  if(e.key.toLowerCase() === 'l') {
+    let next = (index + 1) % REPLACEMENTS.length;
+    updateReplacement(next);
+    return;
+  }
+
   buffer+=e.key.toLowerCase();
   if(buffer.endsWith(SECRET_CODE)){
     buffer="";
     openHub();
   }
   if(buffer.length>20) buffer=buffer.slice(-20);
+});
+
+// Listener for Hub settings changes
+window.addEventListener("message", e => {
+    if(e.data && e.data.type === 'setReplacement') {
+        updateReplacement(e.data.index);
+    }
 });
 
 })();
