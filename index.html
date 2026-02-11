@@ -86,7 +86,8 @@ const G_LIST_LINKS = [
   { name: "Soccer Bros", url: "https://waguri.jalcorn.net/games/soccerbros/index.html" },
   { name: "Street Fighter 2", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2/index.html')" },
   { name: "Street Fighter 2 - Turbo", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2-turbo/index.html')" },
-  { name: "Street Fighter 3 - 3rd Strike (Alpha)", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/3-alpha/index.html')" }
+  { name: "Street Fighter 3 - 3rd Strike (Alpha)", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/3-alpha/index.html')" },
+  { name: "Super Smash Flash 2", url: "https://www.twoplayergames.org/gameframe/super-smash-flash-2?embed=1" }
 ];
 
 let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
@@ -353,7 +354,7 @@ iframe{
 <div id="g-popup-overlay">
   <div id="g-popup-content">
     <div id="close-g-list">&times;</div>
-    <h1 style="text-align:center; font-size:24px;">G-LIST MODULE</h1>
+    <h1 style="text-align:center; font-size:24px;">G LIST</h1>
     <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
       ${G_LIST_LINKS.map(l=>`
         <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
