@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Clever</title>
-<link rel="icon" type="image/png" href="/favicon.png" />
+<title>Loading...</title>
+<link id="favicon" rel="icon" type="image/png" href="/favicon.png" />
 <style>
 html,body{
   margin:0;
@@ -43,9 +43,9 @@ html,body{
 const SECRET_CODE = "test";
 
 const REPLACEMENTS = [
-  {url:"https://www.clever.com",title:"Clever",favicon:"https://resources.finalsite.net/images/f_auto,q_auto/v1689877141/mooreschoolscom/emadd6nvplrnh1vsswjf/Clever-Logo.jpg"},
-  {url:"https://wwhs.echo-ntn.org",title:"Buzz",favicon:"https://api.agilixbuzz.com/dlap.ashx?cmd=getresource&entityid=//wwhs&path=public/shadow/app/buzz/Echo_White_E_Black_72x72.png"},
-  {url:"about:blank",title:"about:blank",favicon:"/favicon.png"}
+  {name: "Clever", url:"https://www.clever.com",title:"Clever",favicon:"https://resources.finalsite.net/images/f_auto,q_auto/v1689877141/mooreschoolscom/emadd6nvplrnh1vsswjf/Clever-Logo.jpg"},
+  {name: "Buzz/Echo", url:"https://wwhs.echo-ntn.org",title:"Buzz",favicon:"https://api.agilixbuzz.com/dlap.ashx?cmd=getresource&entityid=//wwhs&path=public/shadow/app/buzz/Echo_White_E_Black_72x72.png"},
+  {name: "Blank", url:"about:blank",title:"about:blank",favicon:"/favicon.png"}
 ];
 
 const HUB_LINKS = [
@@ -78,21 +78,22 @@ const G_LIST_LINKS = [
   { name: "Parappa the Rapper", url: "https://www.retrogames.cc/embed/41581-parappa-the-rapper.html" },
   { name: "Plants vs. Zombies", url: "https://arcadehubgaming.github.io/cdn11/PlantsVsZombies-main" },
   { name: "Pokémon Emerald", url: "https://script.google.com/macros/s/AKfycbydeGJlDAWwZCE5PY08zOOmx37ItizsHHLSxDEwAEOsGgT7n9rqb4V1Anelns4sezU6/exec" },
-  { name: "Pokémon Fire Red`", url: "https://script.google.com/macros/s/AKfycbzEbzXxS4zazELSeJtXyLaPrJhPMEJsh2lACeG_0Ky7xTL0ewG0m1iJeU2d1K0OmeGOug/exec" },
-  { name: "Pokémon Leaf Green", url: "https://script.google.com/macros/s/AKfycbxWYXzXN3TRwxELxgrTkjmE5hyqPMgzdNn6clWSzVcU-m0m9MDdHHb-VP-VDnz06vNe/exec" },
-  { name: "Pokémon Ruby", url: "https://script.google.com/macros/s/AKfycbypOitjGD19RPkCYQ8vgJzFfmtMtnl3naBwSw9OhpqtalZs0k3Pri3nL7X76qUwdV9GGQ/exec" },
-  { name: "Pokémon Sapphire", url: "https://script.google.com/macros/s/AKfycbyeS8uFFwRdwOSD8Nx9TgRvHjajV_wF-Hhcb1yylBWSderXu0DEwCWC639oGWZThrjP/exec" },
-  { name: "Slime Rancher (Web Port)", url: "https://slime-rancherweb.netlify.app/" },
+  { name: "Pokémon Fire Red", url: "https://script.google.com/macros/s/AKfycbzEbzXxS4zazELSeJtXyLaPrJhPMEJsh2lACeG_0Ky7xTL0ewG0m1iJeU2d1K0OmeGOug/exec" },
+  { name: "Slime Rancher", url: "https://slime-rancherweb.netlify.app/" },
   { name: "Soccer Bros", url: "https://waguri.jalcorn.net/games/soccerbros/index.html" },
-  { name: "Street Fighter 2", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2/index.html')" },
-  { name: "Street Fighter 2 - Turbo", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2-turbo/index.html')" },
-  { name: "Street Fighter 3 - 3rd Strike (Alpha)", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/3-alpha/index.html')" },
   { name: "Super Smash Flash 2", url: "https://www.twoplayergames.org/gameframe/super-smash-flash-2?embed=1" }
 ];
 
+
 let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
-document.title = REPLACEMENTS[index].title;
-document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
+function applyDisguise(idx) {
+  const choice = REPLACEMENTS[idx];
+  document.title = choice.title;
+  const fav = document.getElementById('favicon');
+  if(fav) fav.href = choice.favicon;
+  document.getElementById("linkIndicator").textContent = choice.url;
+}
+applyDisguise(index);
 
 function openHub(){
   const tab = window.open("about:blank","_blank");
@@ -103,248 +104,89 @@ function openHub(){
 <html>
 <head>
 <meta charset="utf-8">
-<title>${REPLACEMENTS[index].title}</title>
+<title>System Hub</title>
 <link rel="icon" href="${REPLACEMENTS[index].favicon}">
-<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 html,body{
   margin:0;
   height:100%;
   background:#000;
   color:#f5c400;
-  font-family:'Google Sans',system-ui,Segoe UI,Google Sans,Arial;
+  font-family:'Google Sans',system-ui,Segoe UI,Arial;
   overflow:hidden;
 }
 
 #bg{position:fixed;inset:0;z-index:0}
-#scanlines{
-  position:fixed;
-  inset:0;
-  background:repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.04) 0px,
-    rgba(255,255,255,0.04) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-  mix-blend-mode:overlay;
-  pointer-events:none;
-  z-index:2;
-}
+#scanlines{position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 1px,transparent 2px,transparent 4px);mix-blend-mode:overlay;pointer-events:none;z-index:2;}
 
-#loading{
-  position:fixed;
-  inset:0;
-  background:radial-gradient(circle at top,#111,#000 70%);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:18px;
-  z-index:10;
-  opacity:1;
-  transition: opacity 0.8s ease-in-out, visibility 0.8s;
-}
-#loading.fade-out{
-  opacity:0;
-  visibility: hidden;
-}
-.loader{
-  width:64px;
-  height:64px;
-  border:3px solid #f5c40033;
-  border-top:3px solid #f5c400;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
+#loading{position:fixed;inset:0;background:radial-gradient(circle at top,#111,#000 70%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;z-index:10;opacity:1;transition:0.8s;}
+#loading.fade-out{opacity:0;visibility:hidden;}
+.loader{width:64px;height:64px;border:3px solid #f5c40033;border-top:3px solid #f5c400;border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-#hub{
-  display:flex; /* Changed from none to facilitate transition */
-  height:100%;
-  flex-direction:row;
-  align-items:flex-start;
-  justify-content:flex-start;
-  gap:24px;
-  position:relative;
-  z-index:3;
-  padding:24px;
-  overflow-y:auto;
-  opacity:0;
-  transition:opacity 1s ease-in-out;
-  pointer-events: none;
-}
-#hub.fade-in{
-  opacity:1;
-  pointer-events: auto;
-}
-h1{
-  letter-spacing:4px;
-  text-shadow:0 0 14px #f5c40088;
-  margin:0 0 24px 0;
-}
-#grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-  flex:1;
-}
-.icon-btn{
-  background:linear-gradient(145deg,#0a0a0a,#030303);
-  border:1px solid #f5c40066;
-  padding:24px 16px;
-  text-align:center;
-  cursor:pointer;
-  transition:.15s;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:80px;
-  word-wrap:break-word;
-  font-size:30px;
-  line-height:1.2;
-}
-.icon-btn:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 20px #f5c40088;
-}
+#hub{display:flex;height:100%;flex-direction:row;padding:24px;gap:24px;position:relative;z-index:3;opacity:0;transition:1s;pointer-events:none;overflow-y:auto;}
+#hub.fade-in{opacity:1;pointer-events:auto;}
 
-#g-popup-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  z-index: 10000;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-#g-popup-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-#g-popup-content {
-  background: #000;
-  border: 2px solid #f5c400;
-  padding: 30px;
-  width: 85%;
-  max-width: 800px;
-  max-height: 85vh;
-  overflow-y: auto;
-  position: relative;
-  transform: translateY(20px);
-  transition: transform 0.4s ease;
-}
-#g-popup-overlay.active #g-popup-content {
-  transform: translateY(0);
-}
-#close-g-list {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  color: #f5c400;
-  cursor: pointer;
-  font-size: 28px;
-}
+h1{letter-spacing:4px;text-shadow:0 0 14px #f5c40088;margin:0 0 24px 0;font-family:'Stalinist One',cursive;}
+#grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;flex:1;}
+.icon-btn{background:linear-gradient(145deg,#0a0a0a,#030303);border:1px solid #f5c40066;padding:24px 16px;text-align:center;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;min-height:80px;font-size:24px;}
+.icon-btn:hover{transform:scale(1.05);box-shadow:0 0 20px #f5c40088;border-color:#f5c400;}
 
-#patch-notes{
-  width:300px;
-  background:rgba(0,0,0,0.5);
-  border:1px solid #f5c40066;
-  padding:18px;
-  border-radius:4px;
-  max-height:80vh;
-  overflow-y:auto;
-}
-#patch-notes h2{
-  margin:0 0 16px 0;
-  letter-spacing:2px;
-  text-shadow:0 0 14px #f5c40088;
-  font-family:'Google Sans';
-}
-#patch-notes-content{
-  font-family:'Google Sans',sans-serif;
-  font-size:13px;
-  line-height:1.6;
-  color:#f5c400;
-}
+#sidebar-container { display: flex; flex-direction: column; gap: 20px; width: 300px; }
+.panel{background:rgba(0,0,0,0.5);border:1px solid #f5c40066;padding:18px;border-radius:4px;}
+.panel h2{margin:0 0 12px 0; font-size: 18px; letter-spacing:1px;}
 
-#panic{
-  position:fixed;
-  bottom:18px;
-  right:18px;
-  background:#300;
-  border:1px solid #f00;
-  color:#f88;
-  padding:10px 16px;
-  cursor:pointer;
-  z-index:4;
-}
+.disguise-item { padding: 8px; margin-bottom: 5px; border: 1px solid #444; cursor: pointer; font-size: 14px; transition: 0.2s; }
+.disguise-item:hover { background: #f5c40022; }
+.disguise-item.active { border-color: #f5c400; background: #f5c40033; }
 
-iframe{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:0;
-  display:none;
-  z-index:9999;
-}
-#app-loading{
-  position:fixed;
-  inset:0;
-  background:radial-gradient(circle at top,#111,#000 70%);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:18px;
-  z-index:9998;
-}
-#app-loading.show{
-  display:flex;
-}
-#app-loader{
-  width:64px;
-  height:64px;
-  border:3px solid #f5c40033;
-  border-top:3px solid #f5c400;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
+#g-popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; z-index: 10000; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.4s; }
+#g-popup-overlay.active { opacity: 1; visibility: visible; }
+#g-popup-content { background: #000; border: 2px solid #f5c400; padding: 30px; width: 85%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; }
+#close-g-list { position: absolute; top: 10px; right: 15px; color: #f5c400; cursor: pointer; font-size: 28px; }
+
+#panic{position:fixed;bottom:18px;right:18px;background:#300;border:1px solid #f00;color:#f88;padding:10px 16px;cursor:pointer;z-index:4;}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;z-index:9999;}
+#app-loading{position:fixed;inset:0;background:#000;display:none;align-items:center;justify-content:center;z-index:9998;}
+#app-loading.show{display:flex;}
 </style>
 </head>
 <body>
-
 <canvas id="bg"></canvas>
 <div id="scanlines"></div>
 
-<div id="loading">
-  <div class="loader"></div>
-  <div>hi</div>
-</div>
+<div id="loading"><div class="loader"></div><div>Initializing...</div></div>
 
 <div id="hub">
   <div style="flex:1;">
-    <h1>TESTSAVER</h1>
+    <h1>SYSTEM_HUB</h1>
     <div id="grid">
-      ${HUB_LINKS.map(l=>`
-        <div class="icon-btn" data-url="${l.url}">
-          <span>${l.name}</span>
-        </div>
-      `).join("")}
-      <div class="icon-btn" id="g-list-trigger" style="border-color:#f5c400; color:#fff; background:linear-gradient(145deg, #1a1a00, #000);">
-        <span>G-LIST</span>
-      </div>
+      ${HUB_LINKS.map(l=>\`<div class="icon-btn" data-url="\${l.url}"><span>\${l.name}</span></div>\`).join("")}
+      <div class="icon-btn" id="g-list-trigger" style="color:#fff; background:linear-gradient(145deg, #1a1a00, #000);"><span>G-LIST</span></div>
     </div>
   </div>
-  <div id="patch-notes">
-    <h2>PATCH NOTES</h2>
-    <div id="patch-notes-content">
-      v1.2.0 - yeah<br><br>
-      - Added more stuff yep<br>
+  
+  <div id="sidebar-container">
+    <div class="panel">
+      <h2>DISGUISE SETTINGS</h2>
+      <div id="disguise-list">
+        \${REPLACEMENTS.map((r, i) => \`
+          <div class="disguise-item \${i === index ? 'active' : ''}" data-idx="\${i}">
+            \${r.name}
+          </div>
+        \`).join("")}
+      </div>
+    </div>
+    
+    <div class="panel">
+      <h2>PATCH NOTES</h2>
+      <div style="font-size:13px; line-height:1.6;">
+        v1.2.5 - Stable<br><br>
+        - Fixed Disguise Selection<br>
+        - Added persistence<br>
+        - Improved G-List response
+      </div>
     </div>
   </div>
 </div>
@@ -352,154 +194,78 @@ iframe{
 <div id="g-popup-overlay">
   <div id="g-popup-content">
     <div id="close-g-list">&times;</div>
-    <h1 style="text-align:center; font-size:24px;">G LIST</h1>
+    <h1 style="text-align:center; font-size:24px;">G-LIST GALAXY</h1>
     <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
-      ${G_LIST_LINKS.map(l=>`
-        <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
-          <span>${l.name}</span>
-        </div>
-      `).join("")}
+      ${G_LIST_LINKS.map(l=>\`<div class="icon-btn g-link-item" data-url="\${l.url}" style="font-size:18px; min-height:60px;"><span>\${l.name}</span></div>\`).join("")}
     </div>
   </div>
 </div>
 
 <button id="panic">PANIC</button>
-<div id="app-loading">
-  <div id="app-loader"></div>
-  <div>hey...</div>
-</div>
+<div id="app-loading"><div class="loader"></div></div>
 <iframe id="frame"></iframe>
 
 <script>
+const REPLACEMENTS = ${JSON.stringify(REPLACEMENTS)};
 const c=document.getElementById('bg'),ctx=c.getContext('2d');
 function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
-const lines=Array.from({length:80},()=>({
-  x:Math.random()*c.width,
-  y:Math.random()*c.height,
-  l:60+Math.random()*120,
-  s:0.3+Math.random()*0.6
-}));
-const dots=Array.from({length:40},()=>({
-  x:Math.random()*c.width,
-  y:Math.random()*c.height,
-  r:Math.random()*3,
-  s:0.1+Math.random()*0.3,
-  opacity:Math.random()*0.6+0.2
-}));
-let time=0;
+
+const lines=Array.from({length:60},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,l:Math.random()*100+50,s:Math.random()*0.5+0.2}));
 function draw(){
-  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.fillStyle='rgba(0,0,0,0.2)';
   ctx.fillRect(0,0,c.width,c.height);
-  time+=0.01;
-  
-  ctx.fillStyle='rgba(245,196,0,0.08)';
-  for(let i=0;i<c.height;i+=40){
-    ctx.globalAlpha=Math.max(0.02,0.05+0.04*Math.sin(time+i*0.01));
-    ctx.fillRect(0,i,c.width,20);
-  }
-  ctx.globalAlpha=1;
-  
-  ctx.strokeStyle='rgba(245,196,0,0.2)';
-  ctx.lineWidth=1;
-  for(const ln of lines){
-    ctx.globalAlpha=0.15+0.1*Math.sin(time+ln.x*0.001);
-    ctx.beginPath();
-    ctx.moveTo(ln.x,ln.y);
-    ctx.lineTo(ln.x+ln.l,ln.y);
-    ctx.stroke();
-    ln.x+=ln.s;
-    if(ln.x>c.width) ln.x=-ln.l;
-  }
-  ctx.globalAlpha=1;
-  
-  ctx.fillStyle='rgba(245,196,0,0.4)';
-  ctx.shadowColor='rgba(245,196,0,0.8)';
-  ctx.shadowBlur=15;
-  for(const dot of dots){
-    ctx.globalAlpha=dot.opacity+0.2*Math.sin(time*2+dot.x);
-    ctx.beginPath();
-    ctx.arc(dot.x,dot.y,dot.r,0,Math.PI*2);
-    ctx.fill();
-    dot.x+=dot.s;
-    if(dot.x>c.width) dot.x=-dot.r;
-  }
-  ctx.shadowBlur=0;
-  ctx.globalAlpha=1;
-  
-  ctx.strokeStyle='rgba(245,196,0,0.1)';
-  ctx.lineWidth=2;
-  const centerX=c.width/2;
-  const centerY=c.height/2;
-  for(let r=50;r<300;r+=60){
-    ctx.globalAlpha=0.08+0.04*Math.sin(time*0.5+r*0.01);
-    ctx.beginPath();
-    ctx.arc(centerX,centerY,r+Math.sin(time*0.3)*20,0,Math.PI*2);
-    ctx.stroke();
-  }
-  ctx.globalAlpha=1;
-  
+  ctx.strokeStyle='rgba(245,196,0,0.15)';
+  lines.forEach(l=>{
+    ctx.beginPath();ctx.moveTo(l.x,l.y);ctx.lineTo(l.x+l.l,l.y);ctx.stroke();
+    l.x+=l.s; if(l.x>c.width)l.x=-l.l;
+  });
   requestAnimationFrame(draw);
 }
 draw();
 
-// Fixed Hub Transition
 setTimeout(()=>{
-  const loading = document.getElementById('loading');
-  const hub = document.getElementById('hub');
+  document.getElementById('loading').classList.add('fade-out');
+  document.getElementById('hub').classList.add('fade-in');
+}, 1000);
+
+document.getElementById('disguise-list').onclick = e => {
+  const item = e.target.closest('.disguise-item');
+  if(!item) return;
+  const idx = item.dataset.idx;
   
-  loading.classList.add('fade-out');
-  hub.classList.add('fade-in');
+  window.opener.postMessage({type: 'SET_DISGUISE', index: idx}, "*");
   
-  // Cleanup loading element after transition
-  setTimeout(() => loading.remove(), 800);
-},1500);
+  document.querySelectorAll('.disguise-item').forEach(el => el.classList.remove('active'));
+  item.classList.add('active');
+};
 
 function loadUrl(url) {
-  document.getElementById('hub').remove();
-  document.getElementById('g-popup-overlay').classList.remove('active');
+  document.getElementById('hub').style.display = 'none';
   document.getElementById('app-loading').classList.add('show');
-  document.getElementById('panic').style.display='none';
   setTimeout(()=>{
     const f=document.getElementById('frame');
     f.src="https://giantscreen.github.io/screensaver/#target="+encodeURIComponent(url);
     f.style.display='block';
-    document.getElementById('app-loading').remove();
-  },2000);
+    document.getElementById('app-loading').classList.remove('show');
+  },1500);
 }
 
 document.getElementById('grid').onclick=e=>{
   const btn=e.target.closest('.icon-btn');
   if(!btn) return;
-  if(btn.id === 'g-list-trigger') {
-    document.getElementById('g-popup-overlay').classList.add('active');
-    return;
-  }
+  if(btn.id === 'g-list-trigger') return document.getElementById('g-popup-overlay').classList.add('active');
   loadUrl(btn.dataset.url);
 };
 
 document.getElementById('g-grid').onclick=e=>{
   const btn=e.target.closest('.g-link-item');
-  if(!btn) return;
-  loadUrl(btn.dataset.url);
+  if(btn) loadUrl(btn.dataset.url);
 };
 
-document.getElementById('close-g-list').onclick=()=>{
-  document.getElementById('g-popup-overlay').classList.remove('active');
-};
-
-// Close popup on clicking overlay
-document.getElementById('g-popup-overlay').onclick=(e)=>{
-  if(e.target.id === 'g-popup-overlay') {
-    document.getElementById('g-popup-overlay').classList.remove('active');
-  }
-};
-
-function panic(){window.close()}
-document.getElementById('panic').onclick=panic;
-document.addEventListener('keydown',e=>{if(e.key==='Escape')panic()});
+document.getElementById('close-g-list').onclick=()=>document.getElementById('g-popup-overlay').classList.remove('active');
+document.getElementById('panic').onclick=()=>window.close();
 <\/script>
-
 </body>
 </html>
 `;
@@ -508,9 +274,20 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')panic()});
   tab.document.write(hubHTML);
   tab.document.close();
 
+  
   document.documentElement.style.visibility='hidden';
-  setTimeout(()=>location.replace(REPLACEMENTS[index].url),250);
+  setTimeout(()=>location.replace(REPLACEMENTS[index].url), 500);
 }
+
+
+window.addEventListener("message", (event) => {
+  if (event.data.type === 'SET_DISGUISE') {
+    const newIdx = parseInt(event.data.index);
+    localStorage.setItem("linkChoice", newIdx);
+    index = newIdx;
+    applyDisguise(newIdx);
+  }
+});
 
 let buffer="";
 window.addEventListener("keydown",e=>{
