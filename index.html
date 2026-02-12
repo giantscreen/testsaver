@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Clever</title>
-<link rel="icon" type="image/png" href="/favicon.png" />
+<link id="dynamic-favicon" rel="icon" type="image/png" href="/favicon.png" />
 <style>
 html,body{
   margin:0;
@@ -91,15 +91,17 @@ const G_LIST_LINKS = [
 ];
 
 let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
-document.title = REPLACEMENTS[index].title;
-document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
 
 function updateReplacement(newIdx) {
   index = newIdx;
   localStorage.setItem("linkChoice", index);
   document.title = REPLACEMENTS[index].title;
   document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
+  document.getElementById("dynamic-favicon").href = REPLACEMENTS[index].favicon;
 }
+
+// Set initial state
+updateReplacement(index);
 
 function openHub(){
   const tab = window.open("about:blank","_blank");
@@ -111,8 +113,8 @@ function openHub(){
 <head>
 <meta charset="utf-8">
 <title>${REPLACEMENTS[index].title}</title>
-<link id="hub-favicon" rel="icon" href="${REPLACEMENTS[index].favicon}">
-<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="${REPLACEMENTS[index].favicon}">
+<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 html,body{
   margin:0;
@@ -340,11 +342,11 @@ iframe{
   <div style="flex:1;">
     <h1>TESTSAVER</h1>
     <div id="grid">
-      ${HUB_LINKS.map(l=>`
-        <div class="icon-btn" data-url="${l.url}">
-          <span>${l.name}</span>
+      \${HUB_LINKS.map(l=>\`
+        <div class="icon-btn" data-url="\${l.url}">
+          <span>\${l.name}</span>
         </div>
-      `).join("")}
+      \`).join("")}
       <div class="icon-btn" id="g-list-trigger" style="border-color:#f5c400; color:#fff; background:linear-gradient(145deg, #1a1a00, #000);">
         <span>G-LIST</span>
       </div>
@@ -366,11 +368,11 @@ iframe{
     <div id="close-g-list">&times;</div>
     <h1 style="text-align:center; font-size:24px;">G LIST</h1>
     <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
-      ${G_LIST_LINKS.map(l=>`
-        <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
-          <span>${l.name}</span>
+      \${G_LIST_LINKS.map(l=>\`
+        <div class="icon-btn g-link-item" data-url="\${l.url}" style="font-size:20px; min-height:70px;">
+          <span>\${l.name}</span>
         </div>
-      `).join("")}
+      \`).join("")}
     </div>
   </div>
 </div>
@@ -383,7 +385,7 @@ iframe{
 <iframe id="frame"></iframe>
 
 <script>
-const REPLACEMENTS_DATA = ${JSON.stringify(REPLACEMENTS)};
+const REPLACEMENTS_DATA = \${JSON.stringify(REPLACEMENTS)};
 const c=document.getElementById('bg'),ctx=c.getContext('2d');
 function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
