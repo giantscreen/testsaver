@@ -100,7 +100,7 @@ function updateReplacement(newIdx) {
   document.getElementById("dynamic-favicon").href = REPLACEMENTS[index].favicon;
 }
 
-// Set initial state
+// Set initial favicon/title
 updateReplacement(index);
 
 function openHub(){
@@ -342,11 +342,11 @@ iframe{
   <div style="flex:1;">
     <h1>TESTSAVER</h1>
     <div id="grid">
-      \${HUB_LINKS.map(l=>\`
-        <div class="icon-btn" data-url="\${l.url}">
-          <span>\${l.name}</span>
+      ${HUB_LINKS.map(l=>`
+        <div class="icon-btn" data-url="${l.url}">
+          <span>${l.name}</span>
         </div>
-      \`).join("")}
+      `).join("")}
       <div class="icon-btn" id="g-list-trigger" style="border-color:#f5c400; color:#fff; background:linear-gradient(145deg, #1a1a00, #000);">
         <span>G-LIST</span>
       </div>
@@ -368,11 +368,11 @@ iframe{
     <div id="close-g-list">&times;</div>
     <h1 style="text-align:center; font-size:24px;">G LIST</h1>
     <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
-      \${G_LIST_LINKS.map(l=>\`
-        <div class="icon-btn g-link-item" data-url="\${l.url}" style="font-size:20px; min-height:70px;">
-          <span>\${l.name}</span>
+      ${G_LIST_LINKS.map(l=>`
+        <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
+          <span>${l.name}</span>
         </div>
-      \`).join("")}
+      `).join("")}
     </div>
   </div>
 </div>
@@ -385,7 +385,7 @@ iframe{
 <iframe id="frame"></iframe>
 
 <script>
-const REPLACEMENTS_DATA = \${JSON.stringify(REPLACEMENTS)};
+const REPLACEMENTS_DATA = ${JSON.stringify(REPLACEMENTS)};
 const c=document.getElementById('bg'),ctx=c.getContext('2d');
 function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
