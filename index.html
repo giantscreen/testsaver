@@ -324,17 +324,6 @@ iframe{
   border-radius:50%;
   animation:spin 1s linear infinite;
 }
-.settings-btn {
-    background: #111;
-    border: 1px solid #f5c400;
-    color: #f5c400;
-    padding: 8px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-}
-.settings-btn:hover { background: #222; }
 </style>
 </head>
 <body>
@@ -362,14 +351,6 @@ iframe{
     </div>
   </div>
   <div id="patch-notes">
-    <div class="side-panel">
-        <h2>REPLACEMENTS</h2>
-        <div id="settings-content">
-            ${REPLACEMENTS.map((r, i) => `
-                <button class="settings-btn" data-idx="${i}">${r.title}</button>
-            `).join("")}
-        </div>
-    </div>
     <div class="side-panel">
         <h2>PATCH NOTES</h2>
         <div id="patch-notes-content">
@@ -516,16 +497,6 @@ document.getElementById('close-g-list').onclick=()=>{
   document.getElementById('g-popup-overlay').classList.remove('active');
 };
 
-document.getElementById('settings-content').onclick=e=>{
-    const btn=e.target.closest('.settings-btn');
-    if(!btn) return;
-    const newIdx = parseInt(btn.dataset.idx);
-    window.opener.postMessage({type:'setReplacement', index: newIdx}, "*");
-    document.title = REPLACEMENTS_DATA[newIdx].title;
-    const favicon = document.getElementById("hub-favicon");
-    if(favicon) favicon.href = REPLACEMENTS_DATA[newIdx].favicon;
-};
-
 document.getElementById('g-popup-overlay').onclick=(e)=>{
   if(e.target.id === 'g-popup-overlay') {
     document.getElementById('g-popup-overlay').classList.remove('active');
@@ -551,7 +522,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')panic()});
 
 let buffer="";
 window.addEventListener("keydown",e=>{
-  // Switch Replacement with L
   if(e.key.toLowerCase() === 'l') {
     let next = (index + 1) % REPLACEMENTS.length;
     updateReplacement(next);
@@ -566,7 +536,6 @@ window.addEventListener("keydown",e=>{
   if(buffer.length>20) buffer=buffer.slice(-20);
 });
 
-// Listener for Hub settings changes
 window.addEventListener("message", e => {
     if(e.data && e.data.type === 'setReplacement') {
         updateReplacement(e.data.index);
