@@ -1,20 +1,580 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Saver</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Clever</title>
+<link rel="icon" type="image/png" href="/favicon.png" />
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:system-ui,Segoe UI,Google Sans,Arial;
+  color:#fff;
+}
+#hint{
+  position:fixed;
+  bottom:12px;
+  left:12px;
+  color:#888;
+  font-size:12px;
+  z-index:3;
+}
+#linkIndicator{
+  position:fixed;
+  bottom:4px;
+  right:8px;
+  font-size:10px;
+  color:#444;
+  z-index:3;
+}
+</style>
 </head>
 <body>
-    <div id="hub">
-        <!-- Other menu items -->
-        <div id="l-button">
-            <!-- L button functionality to change replacements -->
+
+<div id="hint">test</div>
+<div id="linkIndicator"></div>
+
+<script>
+(function(){
+
+const SECRET_CODE = "test";
+
+const REPLACEMENTS = [
+  {url:"https://www.clever.com",title:"Clever",favicon:"https://resources.finalsite.net/images/f_auto,q_auto/v1689877141/mooreschoolscom/emadd6nvplrnh1vsswjf/Clever-Logo.jpg"},
+  {url:"https://wwhs.echo-ntn.org",title:"Buzz",favicon:"https://api.agilixbuzz.com/dlap.ashx?cmd=getresource&entityid=//wwhs&path=public/shadow/app/buzz/Echo_White_E_Black_72x72.png"},
+  {url:"about:blank",title:"about:blank",favicon:"/favicon.png"}
+];
+
+const HUB_LINKS = [
+  { name:"1", url:"effects.html" },
+  { name:"2", url:"https://novamath.22web.org/" },
+  { name:"3", url:"effects2.html" },
+  { name:"4", url:"amazingparticles.html" },
+  { name:"5", url:"galaxymovements.html" },
+  { name:"6", url:"moreamazingeffects.html" },
+  { name:"7", url:"https://slime-rancherweb.netlify.app/" },
+  { name:"A cooler place", url:"https://rightonaether.github.io/DesmosAPI-Graphing/" },
+];
+
+const G_LIST_LINKS = [
+  { name: "Bad Time Simulator", url: "https://script.google.com/macros/s/AKfycbyDlu_jOseVJ1vs-727rRdeIgvVzKkUFT9FwBsdsaLmMKt46TmNtM_jYrDJYvPQb0Y_Lw/exec" },
+  { name: "Balatro", url: "https://waguri.jalcorn.net/games/balatro/index.html" },
+  { name: "Basket Bros", url: "https://basketbros-unblocked.github.io/a7/basket-bros/" },
+  { name: "Baseball Bros", url: "https://waguri.jalcorn.net/games/baseballbros/index.html" },
+  { name: "Block Blast", url: "https://arcadehubgaming.github.io/cdn12/BlockBlast-main" },
+  { name: "Buckshot Roullete", url: "https://waguri.jalcorn.net/games/buckshot/index.html" },
+  { name: "Five Nights at Freddy's (FNAF 1)", url: "https://arcadehubgaming.github.io/cdn7/fnaf/1/index.html" },
+  { name: "Five Nights at Freddy's (FNAF 2)", url: "https://arcadehubgaming.github.io/cdn7/fnaf/2/index.html" },
+  { name: "Five Nights at Freddy's (Ultimate Custom Night)", url: "https://arcadehubgaming.github.io/cdn7/fnaf/ucn/index.html" },
+  { name: "Friday Night Funkin'", url: "https://arcadehubgaming.github.io/cdn2/fridaynightfunkin/index.html" },
+  { name: "Hollow Knight [WEB PORT]", url: "https://waguri.jalcorn.net/games/hollowknight/index.html" },
+  { name: "Papa's Burgeria", url: "https://arcadehubgaming.github.io/cdn5/cdn5/papasburgeria/index.html" },
+  { name: "Papa's Freezeria", url: "https://arcadehubgaming.github.io/cdn5/cdn5/papaspizzaria/index.html" },
+  { name: "Papa's Scooperia", url: "https://arcadehubgaming.github.io/cdn3/cdn3/scooperia/index.html" },
+  { name: "Papa's Wingeria", url: "https://arcadehubgaming.github.io/cdn14/papaswingeria/" },
+  { name: "Parappa the Rapper", url: "https://www.retrogames.cc/embed/41581-parappa-the-rapper.html" },
+  { name: "Plants vs. Zombies", url: "https://arcadehubgaming.github.io/cdn11/PlantsVsZombies-main" },
+  { name: "Pokémon Emerald", url: "https://script.google.com/macros/s/AKfycbydeGJlDAWwZCE5PY08zOOmx37ItizsHHLSxDEwAEOsGgT7n9rqb4V1Anelns4sezU6/exec" },
+  { name: "Pokémon Fire Red`", url: "https://script.google.com/macros/s/AKfycbzEbzXxS4zazELSeJtXyLaPrJhPMEJsh2lACeG_0Ky7xTL0ewG0m1iJeU2d1K0OmeGOug/exec" },
+  { name: "Pokémon Leaf Green", url: "https://script.google.com/macros/s/AKfycbxWYXzXN3TRwxELxgrTkjmE5hyqPMgzdNn6clWSzVcU-m0m9MDdHHb-VP-VDnz06vNe/exec" },
+  { name: "Pokémon Ruby", url: "https://script.google.com/macros/s/AKfycbypOitjGD19RPkCYQ8vgJzFfmtMtnl3naBwSw9OhpqtalZs0k3Pri3nL7X76qUwdV9GGQ/exec" },
+  { name: "Pokémon Sapphire", url: "https://script.google.com/macros/s/AKfycbyeS8uFFwRdwOSD8Nx9TgRvHjajV_wF-Hhcb1yylBWSderXu0DEwCWC639oGWZThrjP/exec" },
+  { name: "Slime Rancher (Web Port)", url: "https://slime-rancherweb.netlify.app/" },
+  { name: "Soccer Bros", url: "https://waguri.jalcorn.net/games/soccerbros/index.html" },
+  { name: "Street Fighter 2", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2/index.html')" },
+  { name: "Street Fighter 2 - Turbo", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/2-turbo/index.html')" },
+  { name: "Street Fighter 3 - 3rd Strike (Alpha)", url: "Hosted on a local CDN :D", js: "fetchFromCDN('https://cdn.jsdelivr.net/gh/ResonanceRenaissance/webportsCDN/street-fighter/3-alpha/index.html')" },
+  { name: "Super Smash Flash 2", url: "https://www.twoplayergames.org/gameframe/super-smash-flash-2?embed=1" }
+];
+
+let index = parseInt(localStorage.getItem("linkChoice") || "0", 10);
+document.title = REPLACEMENTS[index].title;
+document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
+
+function updateReplacement(newIdx) {
+  index = newIdx;
+  localStorage.setItem("linkChoice", index);
+  document.title = REPLACEMENTS[index].title;
+  document.getElementById("linkIndicator").textContent = REPLACEMENTS[index].url;
+}
+
+function openHub(){
+  const tab = window.open("about:blank","_blank");
+  if(!tab) return;
+
+  const hubHTML = `
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>${REPLACEMENTS[index].title}</title>
+<link id="hub-favicon" rel="icon" href="${REPLACEMENTS[index].favicon}">
+<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#000;
+  color:#f5c400;
+  font-family:'Google Sans',system-ui,Segoe UI,Google Sans,Arial;
+  overflow:hidden;
+}
+
+#bg{position:fixed;inset:0;z-index:0}
+#scanlines{
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.04) 0px,
+    rgba(255,255,255,0.04) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  mix-blend-mode:overlay;
+  pointer-events:none;
+  z-index:2;
+}
+
+#loading{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#111,#000 70%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:18px;
+  z-index:10;
+  opacity:1;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s;
+}
+#loading.fade-out{
+  opacity:0;
+  visibility: hidden;
+}
+.loader{
+  width:64px;
+  height:64px;
+  border:3px solid #f5c40033;
+  border-top:3px solid #f5c400;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#hub{
+  display:flex; 
+  height:100%;
+  flex-direction:row;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:24px;
+  position:relative;
+  z-index:3;
+  padding:24px;
+  overflow-y:auto;
+  opacity:0;
+  transition:opacity 1s ease-in-out;
+  pointer-events: none;
+}
+#hub.fade-in{
+  opacity:1;
+  pointer-events: auto;
+}
+h1{
+  letter-spacing:4px;
+  text-shadow:0 0 14px #f5c40088;
+  margin:0 0 24px 0;
+}
+#grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  flex:1;
+}
+.icon-btn{
+  background:linear-gradient(145deg,#0a0a0a,#030303);
+  border:1px solid #f5c40066;
+  padding:24px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:.15s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:80px;
+  word-wrap:break-word;
+  font-size:30px;
+  line-height:1.2;
+}
+.icon-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 20px #f5c40088;
+}
+
+#g-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+#g-popup-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+#g-popup-content {
+  background: #000;
+  border: 2px solid #f5c400;
+  padding: 30px;
+  width: 85%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+#g-popup-overlay.active #g-popup-content {
+  transform: translateY(0);
+}
+#close-g-list {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #f5c400;
+  cursor: pointer;
+  font-size: 28px;
+}
+
+#patch-notes{
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.side-panel{
+  background:rgba(0,0,0,0.5);
+  border:1px solid #f5c40066;
+  padding:18px;
+  border-radius:4px;
+}
+.side-panel h2{
+  margin:0 0 16px 0;
+  letter-spacing:2px;
+  text-shadow:0 0 14px #f5c40088;
+  font-family:'Google Sans';
+}
+#patch-notes-content{
+  font-family:'Google Sans',sans-serif;
+  font-size:13px;
+  line-height:1.6;
+  color:#f5c400;
+}
+
+#panic{
+  position:fixed;
+  bottom:18px;
+  right:18px;
+  background:#300;
+  border:1px solid #f00;
+  color:#f88;
+  padding:10px 16px;
+  cursor:pointer;
+  z-index:4;
+}
+
+iframe{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  display:none;
+  z-index:9999;
+}
+#app-loading{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#111,#000 70%);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:18px;
+  z-index:9998;
+}
+#app-loading.show{
+  display:flex;
+}
+#app-loader{
+  width:64px;
+  height:64px;
+  border:3px solid #f5c40033;
+  border-top:3px solid #f5c400;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+.settings-btn {
+    background: #111;
+    border: 1px solid #f5c400;
+    color: #f5c400;
+    padding: 8px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+.settings-btn:hover { background: #222; }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div id="scanlines"></div>
+
+<div id="loading">
+  <div class="loader"></div>
+  <div>hi</div>
+</div>
+
+<div id="hub">
+  <div style="flex:1;">
+    <h1>TESTSAVER</h1>
+    <div id="grid">
+      ${HUB_LINKS.map(l=>`
+        <div class="icon-btn" data-url="${l.url}">
+          <span>${l.name}</span>
         </div>
-        <div id="patch-notes">
-            <h2>PATCH NOTES</h2>
-            <p>Details about the recent updates...</p>
+      `).join("")}
+      <div class="icon-btn" id="g-list-trigger" style="border-color:#f5c400; color:#fff; background:linear-gradient(145deg, #1a1a00, #000);">
+        <span>G-LIST</span>
+      </div>
+    </div>
+  </div>
+  <div id="patch-notes">
+    <div class="side-panel">
+        <h2>REPLACEMENTS</h2>
+        <div id="settings-content">
+            ${REPLACEMENTS.map((r, i) => `
+                <button class="settings-btn" data-idx="${i}">${r.title}</button>
+            `).join("")}
         </div>
     </div>
+    <div class="side-panel">
+        <h2>PATCH NOTES</h2>
+        <div id="patch-notes-content">
+          v1.2.1 - yeah<br><br>
+          - Added replacements<br>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div id="g-popup-overlay">
+  <div id="g-popup-content">
+    <div id="close-g-list">&times;</div>
+    <h1 style="text-align:center; font-size:24px;">G LIST</h1>
+    <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
+      ${G_LIST_LINKS.map(l=>`
+        <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
+          <span>${l.name}</span>
+        </div>
+      `).join("")}
+    </div>
+  </div>
+</div>
+
+<button id="panic">PANIC</button>
+<div id="app-loading">
+  <div id="app-loader"></div>
+  <div>hey...</div>
+</div>
+<iframe id="frame"></iframe>
+
+<script>
+const REPLACEMENTS_DATA = ${JSON.stringify(REPLACEMENTS)};
+const c=document.getElementById('bg'),ctx=c.getContext('2d');
+function resize(){c.width=innerWidth;c.height=innerHeight}
+resize();addEventListener('resize',resize);
+const lines=Array.from({length:80},()=>({
+  x:Math.random()*c.width,
+  y:Math.random()*c.height,
+  l:60+Math.random()*120,
+  s:0.3+Math.random()*0.6
+}));
+const dots=Array.from({length:40},()=>({
+  x:Math.random()*c.width,
+  y:Math.random()*c.height,
+  r:Math.random()*3,
+  s:0.1+Math.random()*0.3,
+  opacity:Math.random()*0.6+0.2
+}));
+let time=0;
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.fillRect(0,0,c.width,c.height);
+  time+=0.01;
+  
+  ctx.fillStyle='rgba(245,196,0,0.08)';
+  for(let i=0;i<c.height;i+=40){
+    ctx.globalAlpha=Math.max(0.02,0.05+0.04*Math.sin(time+i*0.01));
+    ctx.fillRect(0,i,c.width,20);
+  }
+  ctx.globalAlpha=1;
+  
+  ctx.strokeStyle='rgba(245,196,0,0.2)';
+  ctx.lineWidth=1;
+  for(const ln of lines){
+    ctx.globalAlpha=0.15+0.1*Math.sin(time+ln.x*0.001);
+    ctx.beginPath();
+    ctx.moveTo(ln.x,ln.y);
+    ctx.lineTo(ln.x+ln.l,ln.y);
+    ctx.stroke();
+    ln.x+=ln.s;
+    if(ln.x>c.width) ln.x=-ln.l;
+  }
+  ctx.globalAlpha=1;
+  
+  ctx.fillStyle='rgba(245,196,0,0.4)';
+  ctx.shadowColor='rgba(245,196,0,0.8)';
+  ctx.shadowBlur=15;
+  for(const dot of dots){
+    ctx.globalAlpha=dot.opacity+0.2*Math.sin(time*2+dot.x);
+    ctx.beginPath();
+    ctx.arc(dot.x,dot.y,dot.r,0,Math.PI*2);
+    ctx.fill();
+    dot.x+=dot.s;
+    if(dot.x>c.width) dot.x=-dot.r;
+  }
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+  
+  ctx.strokeStyle='rgba(245,196,0,0.1)';
+  ctx.lineWidth=2;
+  const centerX=c.width/2;
+  const centerY=c.height/2;
+  for(let r=50;r<300;r+=60){
+    ctx.globalAlpha=0.08+0.04*Math.sin(time*0.5+r*0.01);
+    ctx.beginPath();
+    ctx.arc(centerX,centerY,r+Math.sin(time*0.3)*20,0,Math.PI*2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  
+  requestAnimationFrame(draw);
+}
+draw();
+
+setTimeout(()=>{
+  const loading = document.getElementById('loading');
+  const hub = document.getElementById('hub');
+  loading.classList.add('fade-out');
+  hub.classList.add('fade-in');
+  setTimeout(() => loading.remove(), 800);
+},1500);
+
+function loadUrl(url) {
+  document.getElementById('hub').remove();
+  document.getElementById('g-popup-overlay').classList.remove('active');
+  document.getElementById('app-loading').classList.add('show');
+  document.getElementById('panic').style.display='none';
+  setTimeout(()=>{
+    const f=document.getElementById('frame');
+    f.src="https://giantscreen.github.io/screensaver/#target="+encodeURIComponent(url);
+    f.style.display='block';
+    document.getElementById('app-loading').remove();
+  },2000);
+}
+
+document.getElementById('grid').onclick=e=>{
+  const btn=e.target.closest('.icon-btn');
+  if(!btn) return;
+  if(btn.id === 'g-list-trigger') {
+    document.getElementById('g-popup-overlay').classList.add('active');
+    return;
+  }
+  loadUrl(btn.dataset.url);
+};
+
+document.getElementById('g-grid').onclick=e=>{
+  const btn=e.target.closest('.g-link-item');
+  if(!btn) return;
+  loadUrl(btn.dataset.url);
+};
+
+document.getElementById('close-g-list').onclick=()=>{
+  document.getElementById('g-popup-overlay').classList.remove('active');
+};
+
+document.getElementById('settings-content').onclick=e=>{
+    const btn=e.target.closest('.settings-btn');
+    if(!btn) return;
+    const newIdx = parseInt(btn.dataset.idx);
+    window.opener.postMessage({type:'setReplacement', index: newIdx}, "*");
+    document.title = REPLACEMENTS_DATA[newIdx].title;
+    const favicon = document.getElementById("hub-favicon");
+    if(favicon) favicon.href = REPLACEMENTS_DATA[newIdx].favicon;
+};
+
+document.getElementById('g-popup-overlay').onclick=(e)=>{
+  if(e.target.id === 'g-popup-overlay') {
+    document.getElementById('g-popup-overlay').classList.remove('active');
+  }
+};
+
+function panic(){window.close()}
+document.getElementById('panic').onclick=panic;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')panic()});
+<\/script>
+
+</body>
+</html>
+`;
+
+  tab.document.open();
+  tab.document.write(hubHTML);
+  tab.document.close();
+
+  document.documentElement.style.visibility='hidden';
+  setTimeout(()=>location.replace(REPLACEMENTS[index].url),250);
+}
+
+let buffer="";
+window.addEventListener("keydown",e=>{
+  // Switch Replacement with L
+  if(e.key.toLowerCase() === 'l') {
+    let next = (index + 1) % REPLACEMENTS.length;
+    updateReplacement(next);
+    return;
+  }
+
+  buffer+=e.key.toLowerCase();
+  if(buffer.endsWith(SECRET_CODE)){
+    buffer="";
+    openHub();
+  }
+  if(buffer.length>20) buffer=buffer.slice(-20);
+});
+
+// Listener for Hub settings changes
+window.addEventListener("message", e => {
+    if(e.data && e.data.type === 'setReplacement') {
+        updateReplacement(e.data.index);
+    }
+});
+
+})();
+</script>
+
 </body>
 </html>
