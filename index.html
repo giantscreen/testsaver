@@ -111,8 +111,8 @@ function openHub(){
 <html>
 <head>
 <meta charset="utf-8">
-<title>${REPLACEMENTS[index].title}</title>
-<link rel="icon" type="image/png" href="${REPLACEMENTS[index].favicon}">
+<title>\${REPLACEMENTS[index].title}</title>
+<link rel="icon" type="image/png" href="\${REPLACEMENTS[index].favicon}">
 <link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 html,body{
@@ -341,11 +341,11 @@ iframe{
   <div style="flex:1;">
     <h1>TESTSAVER</h1>
     <div id="grid">
-      ${HUB_LINKS.map(l=>`
-        <div class="icon-btn" data-url="${l.url}">
-          <span>${l.name}</span>
+      \${HUB_LINKS.map(l=>\`
+        <div class="icon-btn" data-url="\${l.url}">
+          <span>\${l.name}</span>
         </div>
-      `).join("")}
+      \`).join("")}
       <div class="icon-btn" id="g-list-trigger" style="border-color:#f5c400; color:#fff; background:linear-gradient(145deg, #1a1a00, #000);">
         <span>G-LIST 2</span>
       </div>
@@ -356,7 +356,8 @@ iframe{
         <h2>PATCH NOTES</h2>
         <div id="patch-notes-content">
           v1.2.2 - ughh<br><br>
-          - removed the replacements menu, you can still change the tab from the starting screen by pressing L<br>
+          - anti-iframe overlay enabled<br>
+          - removed replacements menu
         </div>
     </div>
   </div>
@@ -367,11 +368,11 @@ iframe{
     <div id="close-g-list">&times;</div>
     <h1 style="text-align:center; font-size:24px;">G LIST</h1>
     <div id="g-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:15px; margin-top:20px;">
-      ${G_LIST_LINKS.map(l=>`
-        <div class="icon-btn g-link-item" data-url="${l.url}" style="font-size:20px; min-height:70px;">
-          <span>${l.name}</span>
+      \${G_LIST_LINKS.map(l=>\`
+        <div class="icon-btn g-link-item" data-url="\${l.url}" style="font-size:20px; min-height:70px;">
+          <span>\${l.name}</span>
         </div>
-      `).join("")}
+      \`).join("")}
     </div>
   </div>
 </div>
@@ -384,7 +385,6 @@ iframe{
 <iframe id="frame"></iframe>
 
 <script>
-const REPLACEMENTS_DATA = ${JSON.stringify(REPLACEMENTS)};
 const c=document.getElementById('bg'),ctx=c.getContext('2d');
 function resize(){c.width=innerWidth;c.height=innerHeight}
 resize();addEventListener('resize',resize);
@@ -406,14 +406,12 @@ function draw(){
   ctx.fillStyle='rgba(0,0,0,0.15)';
   ctx.fillRect(0,0,c.width,c.height);
   time+=0.01;
-  
   ctx.fillStyle='rgba(245,196,0,0.08)';
   for(let i=0;i<c.height;i+=40){
     ctx.globalAlpha=Math.max(0.02,0.05+0.04*Math.sin(time+i*0.01));
     ctx.fillRect(0,i,c.width,20);
   }
   ctx.globalAlpha=1;
-  
   ctx.strokeStyle='rgba(245,196,0,0.2)';
   ctx.lineWidth=1;
   for(const ln of lines){
@@ -426,7 +424,6 @@ function draw(){
     if(ln.x>c.width) ln.x=-ln.l;
   }
   ctx.globalAlpha=1;
-  
   ctx.fillStyle='rgba(245,196,0,0.4)';
   ctx.shadowColor='rgba(245,196,0,0.8)';
   ctx.shadowBlur=15;
@@ -440,7 +437,6 @@ function draw(){
   }
   ctx.shadowBlur=0;
   ctx.globalAlpha=1;
-  
   ctx.strokeStyle='rgba(245,196,0,0.1)';
   ctx.lineWidth=2;
   const centerX=c.width/2;
@@ -452,7 +448,6 @@ function draw(){
     ctx.stroke();
   }
   ctx.globalAlpha=1;
-  
   requestAnimationFrame(draw);
 }
 draw();
@@ -464,6 +459,22 @@ setTimeout(()=>{
   hub.classList.add('fade-in');
   setTimeout(() => loading.remove(), 800);
 },1500);
+
+// ANTI-IFRAME OBSERVER START
+const antiOverlayObserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
+      // If a new iframe is added and it's NOT our main game frame
+      if (node.nodeName === 'IFRAME' && node.id !== 'frame') {
+        console.warn("Unauthorized iframe overlay detected. Refreshing node...");
+        // Refresh the source to neutralize the overlay
+        node.src = node.src; 
+      }
+    });
+  });
+});
+antiOverlayObserver.observe(document.body, { childList: true, subtree: true });
+// ANTI-IFRAME OBSERVER END
 
 function loadUrl(url) {
   document.getElementById('hub').remove();
